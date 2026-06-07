@@ -1,4 +1,4 @@
-import { ArrowLeft, Play, Save, Plus, MousePointer2, Focus, MousePointerClick } from "lucide-react";
+import { ArrowLeft, Play, Save, Plus, MousePointer2, MousePointerClick } from "lucide-react";
 import { useBuilderStore } from "../../store/useBuilderStore";
 import { RenderComponent } from "../layout/RenderComponent";
 
@@ -70,7 +70,7 @@ export function ComponentEditor() {
         <div className="flex-1 relative flex items-center justify-center overflow-auto" style={{ backgroundColor: "#1C1C1C", backgroundImage: "radial-gradient(#333 1px, transparent 1px)", backgroundSize: "16px 16px" }}>
           {/* Component render */}
           <div className="bg-transparent" style={{ transform: "scale(1)" }}>
-            <RenderComponent id={componentId} disableSelection={true} />
+            <RenderComponent id={componentId!} disableSelection={true} />
           </div>
         </div>
 

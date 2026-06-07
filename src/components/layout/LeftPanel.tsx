@@ -1,4 +1,4 @@
-import { Layers, LayoutGrid, Image as ImageIcon, Type, Eye, Lock, ChevronRight, ChevronDown, Trash2, Copy, Video } from "lucide-react";
+import { Layers, LayoutGrid, Image as ImageIcon, Type, Eye, Lock, ChevronRight, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { useDraggable } from "@dnd-kit/core";
 import { useBuilderStore } from "../../store/useBuilderStore";
@@ -98,35 +98,65 @@ export function LeftPanel() {
       {/* Content Area */}
       <div className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-none">
         {activeTab === 'components' && (
-          <div className="p-3 text-sm text-builder-text-muted">
-            <div className="mb-4">
-              <h3 className="text-[11px] uppercase tracking-wider font-medium text-builder-text mb-2">Layout</h3>
-              <div className="grid grid-cols-2 gap-2">
+          <div className="p-3 text-xs text-builder-text-muted space-y-4">
+            <div>
+              <h3 className="text-[10px] uppercase tracking-wider font-semibold text-builder-text mb-2 border-b border-builder-border pb-1">Layout</h3>
+              <div className="grid grid-cols-2 gap-1.5">
                 <DraggableItem id="section" label="Section" />
                 <DraggableItem id="container" label="Container" />
+                <DraggableItem id="rectangle" label="Rectangle" />
                 <DraggableItem id="grid" label="Grid" />
                 <DraggableItem id="flex-row" label="Flex Row" />
+                <DraggableItem id="card" label="Card" />
+                <DraggableItem id="separator" label="Separator" />
+                <DraggableItem id="motion-path" label="Motion Path" />
               </div>
             </div>
             
-            <div className="mb-4">
-              <h3 className="text-[11px] uppercase tracking-wider font-medium text-builder-text mb-2">Content</h3>
-              <div className="grid grid-cols-2 gap-2">
+            <div>
+              <h3 className="text-[10px] uppercase tracking-wider font-semibold text-builder-text mb-2 border-b border-builder-border pb-1">Typography & Media</h3>
+              <div className="grid grid-cols-2 gap-1.5">
                 <DraggableItem id="heading" label="Heading" />
                 <DraggableItem id="paragraph" label="Paragraph" />
                 <DraggableItem id="image" label="Image" />
                 <DraggableItem id="video" label="Video" />
-                <DraggableItem id="button" label="Button" />
               </div>
             </div>
 
-            <div className="mb-4">
-              <h3 className="text-[11px] uppercase tracking-wider font-medium text-builder-accent mb-2">shadcn/ui</h3>
-              <div className="grid grid-cols-2 gap-2">
-                <DraggableItem id="card" label="Card" />
+            <div>
+              <h3 className="text-[10px] uppercase tracking-wider font-semibold text-builder-accent mb-2 border-b border-builder-border pb-1">Form & Control</h3>
+              <div className="grid grid-cols-2 gap-1.5">
+                <DraggableItem id="button" label="Button" />
                 <DraggableItem id="input" label="Input" />
+                <DraggableItem id="textarea" label="Textarea" />
+                <DraggableItem id="checkbox" label="Checkbox" />
+                <DraggableItem id="switch" label="Switch" />
+                <DraggableItem id="slider" label="Slider" />
+                <DraggableItem id="select" label="Select" />
+                <DraggableItem id="calendar" label="Calendar" />
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-[10px] uppercase tracking-wider font-semibold text-builder-accent-2 mb-2 border-b border-builder-border pb-1">Data Display</h3>
+              <div className="grid grid-cols-2 gap-1.5">
                 <DraggableItem id="badge" label="Badge" />
                 <DraggableItem id="avatar" label="Avatar" />
+                <DraggableItem id="progress" label="Progress" />
+                <DraggableItem id="alert" label="Alert" />
+                <DraggableItem id="table" label="Table" />
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-[10px] uppercase tracking-wider font-semibold text-[#8B5CF6] mb-2 border-b border-builder-border pb-1">Interactive / Overlay</h3>
+              <div className="grid grid-cols-2 gap-1.5">
+                <DraggableItem id="accordion" label="Accordion" />
+                <DraggableItem id="tabs" label="Tabs" />
+                <DraggableItem id="dialog" label="Dialog" />
+                <DraggableItem id="sheet" label="Sheet" />
+                <DraggableItem id="popover" label="Popover" />
+                <DraggableItem id="tooltip" label="Tooltip" />
               </div>
             </div>
           </div>

@@ -204,6 +204,66 @@ export function RightPanel() {
 
             <div className="h-[1px] bg-builder-border" />
             
+            {/* Positioning Section */}
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-[11px] uppercase tracking-wider font-medium text-builder-text">Positioning</h3>
+              </div>
+              <div className="space-y-3 text-xs">
+                <div className="flex items-center justify-between">
+                  <span className="text-builder-text-muted">Type</span>
+                  <select 
+                    value={component.style.position || "static"} 
+                    onChange={e => handleStyleChange('position', e.target.value)}
+                    className="w-24 bg-builder-surface-2 border border-builder-border-2 rounded-sm px-2 h-6 text-builder-text focus:outline-none focus:border-builder-accent"
+                  >
+                    <option value="static">Static (Flow)</option>
+                    <option value="relative">Relative</option>
+                    <option value="absolute">Absolute (Free)</option>
+                    <option value="fixed">Fixed</option>
+                  </select>
+                </div>
+                
+                {(component.style.position === 'absolute' || component.style.position === 'relative' || component.style.position === 'fixed') && (
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-builder-text-muted w-8 text-right">Left</span>
+                      <input 
+                        type="text" 
+                        value={component.style.left || ""} 
+                        onChange={e => handleStyleChange('left', e.target.value)}
+                        placeholder="auto"
+                        className="flex-1 bg-builder-surface-2 border border-builder-border-2 rounded-sm px-2 h-6 text-builder-text focus:outline-none focus:border-builder-accent" 
+                      />
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-builder-text-muted w-8 text-right">Top</span>
+                      <input 
+                        type="text" 
+                        value={component.style.top || ""} 
+                        onChange={e => handleStyleChange('top', e.target.value)}
+                        placeholder="auto"
+                        className="flex-1 bg-builder-surface-2 border border-builder-border-2 rounded-sm px-2 h-6 text-builder-text focus:outline-none focus:border-builder-accent" 
+                      />
+                    </div>
+                  </div>
+                )}
+                
+                <div className="flex items-center justify-between">
+                  <span className="text-builder-text-muted">Z-Index</span>
+                  <input 
+                    type="text" 
+                    value={component.style.zIndex || ""} 
+                    onChange={e => handleStyleChange('zIndex', e.target.value)}
+                    placeholder="auto"
+                    className="w-24 bg-builder-surface-2 border border-builder-border-2 rounded-sm px-2 h-6 text-builder-text focus:outline-none focus:border-builder-accent" 
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="h-[1px] bg-builder-border" />
+            
             {/* Spacing Section */}
             <div>
               <div className="flex items-center justify-between mb-3">
@@ -361,14 +421,49 @@ export function RightPanel() {
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-[11px] uppercase tracking-wider font-medium text-builder-text">Page Properties</h3>
               </div>
-              <div className="space-y-3 text-xs">
+              <div className="space-y-4 text-xs">
+                {/* Background Color */}
                 <div className="flex flex-col gap-1.5">
                   <span className="text-builder-text-muted">Background Color</span>
-                  <input type="text" value={pageSettings.backgroundColor} readOnly className="w-full bg-builder-surface-2 border border-builder-border-2 rounded-sm px-2 h-6 text-builder-text focus:outline-none" />
+                  <div className="flex gap-2">
+                    <input 
+                      type="color" 
+                      value={pageSettings.backgroundColor?.startsWith('#') ? pageSettings.backgroundColor : '#ffffff'} 
+                      onChange={e => useBuilderStore.getState().updatePageSettings({ backgroundColor: e.target.value })}
+                      className="w-6 h-6 rounded-sm border border-builder-border p-0 cursor-pointer" 
+                    />
+                    <input 
+                      type="text" 
+                      value={pageSettings.backgroundColor || ""} 
+                      onChange={e => useBuilderStore.getState().updatePageSettings({ backgroundColor: e.target.value })}
+                      placeholder="#ffffff"
+                      className="flex-1 bg-builder-surface-2 border border-builder-border-2 rounded-sm px-2 h-6 text-builder-text focus:outline-none focus:border-builder-accent font-mono" 
+                    />
+                  </div>
                 </div>
+
+                {/* Min Height */}
+                <div className="flex flex-col gap-1.5">
+                  <span className="text-builder-text-muted">Minimum Height</span>
+                  <input 
+                    type="text" 
+                    value={(pageSettings as any).minHeight || "100vh"} 
+                    onChange={e => useBuilderStore.getState().updatePageSettings({ minHeight: e.target.value })}
+                    placeholder="100vh or 1000px"
+                    className="w-full bg-builder-surface-2 border border-builder-border-2 rounded-sm px-2 h-6 text-builder-text focus:outline-none focus:border-builder-accent" 
+                  />
+                </div>
+
+                {/* Max Width */}
                 <div className="flex flex-col gap-1.5">
                   <span className="text-builder-text-muted">Max Width</span>
-                  <input type="text" value={pageSettings.maxWidth} readOnly className="w-full bg-builder-surface-2 border border-builder-border-2 rounded-sm px-2 h-6 text-builder-text focus:outline-none" />
+                  <input 
+                    type="text" 
+                    value={pageSettings.maxWidth || "1440px"} 
+                    onChange={e => useBuilderStore.getState().updatePageSettings({ maxWidth: e.target.value })}
+                    placeholder="1440px or 100%"
+                    className="w-full bg-builder-surface-2 border border-builder-border-2 rounded-sm px-2 h-6 text-builder-text focus:outline-none focus:border-builder-accent" 
+                  />
                 </div>
               </div>
             </div>
@@ -441,12 +536,12 @@ export function RightPanel() {
                 {(component.type === 'image' || component.type === 'avatar' || component.type === 'video') && (
                   <>
                     <div className="flex flex-col gap-1.5">
-                      <span className="text-builder-text-muted">Image Source URL</span>
+                      <span className="text-builder-text-muted">Source URL</span>
                       <input
                         type="text"
                         value={component.props.src || ""}
                         onChange={e => updateComponentProps(component.id, { src: e.target.value })}
-                        placeholder="https://example.com/image.jpg"
+                        placeholder="https://example.com/source"
                         className="w-full bg-builder-surface-2 border border-builder-border-2 rounded-sm px-2 h-7 text-builder-text focus:outline-none focus:border-builder-accent"
                       />
                     </div>
@@ -485,7 +580,356 @@ export function RightPanel() {
                   </>
                 )}
 
-                {['section', 'container', 'grid', 'flex-row'].includes(component.type) && (
+                {component.type === 'separator' && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-builder-text-muted">Orientation</span>
+                    <select
+                      value={component.props.orientation || "horizontal"}
+                      onChange={e => updateComponentProps(component.id, { orientation: e.target.value })}
+                      className="w-24 bg-builder-surface-2 border border-builder-border-2 rounded-sm px-2 h-6 text-builder-text focus:outline-none focus:border-builder-accent"
+                    >
+                      <option value="horizontal">Horizontal</option>
+                      <option value="vertical">Vertical</option>
+                    </select>
+                  </div>
+                )}
+
+                {component.type === 'textarea' && (
+                  <div className="flex flex-col gap-1.5">
+                    <span className="text-builder-text-muted">Placeholder Text</span>
+                    <input
+                      type="text"
+                      value={component.props.placeholder || ""}
+                      onChange={e => updateComponentProps(component.id, { placeholder: e.target.value })}
+                      placeholder="Type message..."
+                      className="w-full bg-builder-surface-2 border border-builder-border-2 rounded-sm px-2 h-7 text-builder-text focus:outline-none focus:border-builder-accent"
+                    />
+                  </div>
+                )}
+
+                {(component.type === 'checkbox' || component.type === 'switch') && (
+                  <>
+                    <div className="flex flex-col gap-1.5">
+                      <span className="text-builder-text-muted">Label Text</span>
+                      <input
+                        type="text"
+                        value={component.props.label || ""}
+                        onChange={e => updateComponentProps(component.id, { label: e.target.value })}
+                        placeholder="Toggle item"
+                        className="w-full bg-builder-surface-2 border border-builder-border-2 rounded-sm px-2 h-7 text-builder-text focus:outline-none focus:border-builder-accent"
+                      />
+                    </div>
+                    <label className="flex items-center gap-2 text-builder-text-muted mt-2">
+                      <input 
+                        type="checkbox" 
+                        checked={component.props.checked || false} 
+                        onChange={e => updateComponentProps(component.id, { checked: e.target.checked })} 
+                      />
+                      Checked by default
+                    </label>
+                  </>
+                )}
+
+                {component.type === 'slider' && (
+                  <>
+                    <div className="flex flex-col gap-1.5">
+                      <span className="text-builder-text-muted">Label</span>
+                      <input
+                        type="text"
+                        value={component.props.label || ""}
+                        onChange={e => updateComponentProps(component.id, { label: e.target.value })}
+                        className="w-full bg-builder-surface-2 border border-builder-border-2 rounded-sm px-2 h-7 text-builder-text focus:outline-none focus:border-builder-accent"
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 mt-2">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-builder-text-muted">Val</span>
+                        <input
+                          type="number"
+                          value={component.props.value !== undefined ? component.props.value : 50}
+                          onChange={e => updateComponentProps(component.id, { value: Number(e.target.value) })}
+                          className="w-full bg-builder-surface-2 border border-builder-border-2 rounded-sm px-2 h-6 text-builder-text focus:outline-none"
+                        />
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-builder-text-muted">Step</span>
+                        <input
+                          type="number"
+                          value={component.props.step !== undefined ? component.props.step : 1}
+                          onChange={e => updateComponentProps(component.id, { step: Number(e.target.value) })}
+                          className="w-full bg-builder-surface-2 border border-builder-border-2 rounded-sm px-2 h-6 text-builder-text focus:outline-none"
+                        />
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-builder-text-muted">Min</span>
+                        <input
+                          type="number"
+                          value={component.props.min !== undefined ? component.props.min : 0}
+                          onChange={e => updateComponentProps(component.id, { min: Number(e.target.value) })}
+                          className="w-full bg-builder-surface-2 border border-builder-border-2 rounded-sm px-2 h-6 text-builder-text focus:outline-none"
+                        />
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-builder-text-muted">Max</span>
+                        <input
+                          type="number"
+                          value={component.props.max !== undefined ? component.props.max : 100}
+                          onChange={e => updateComponentProps(component.id, { max: Number(e.target.value) })}
+                          className="w-full bg-builder-surface-2 border border-builder-border-2 rounded-sm px-2 h-6 text-builder-text focus:outline-none"
+                        />
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {component.type === 'select' && (
+                  <>
+                    <div className="flex flex-col gap-1.5">
+                      <span className="text-builder-text-muted">Placeholder Text</span>
+                      <input
+                        type="text"
+                        value={component.props.placeholder || ""}
+                        onChange={e => updateComponentProps(component.id, { placeholder: e.target.value })}
+                        className="w-full bg-builder-surface-2 border border-builder-border-2 rounded-sm px-2 h-7 text-builder-text focus:outline-none"
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1.5 mt-2">
+                      <span className="text-builder-text-muted">Options (Comma separated)</span>
+                      <textarea
+                        value={(component.props.options || []).join(', ')}
+                        onChange={e => updateComponentProps(component.id, { options: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })}
+                        placeholder="Option 1, Option 2, Option 3"
+                        rows={3}
+                        className="w-full bg-builder-surface-2 border border-builder-border-2 rounded-sm p-2 text-builder-text focus:outline-none text-xs"
+                      />
+                    </div>
+                  </>
+                )}
+
+                {component.type === 'progress' && (
+                  <div className="flex flex-col gap-1.5">
+                    <span className="text-builder-text-muted">Progress Value (0-100)</span>
+                    <input
+                      type="number"
+                      min={0}
+                      max={100}
+                      value={component.props.value !== undefined ? component.props.value : 0}
+                      onChange={e => updateComponentProps(component.id, { value: Math.min(100, Math.max(0, Number(e.target.value))) })}
+                      className="w-full bg-builder-surface-2 border border-builder-border-2 rounded-sm px-2 h-7 text-builder-text focus:outline-none"
+                    />
+                  </div>
+                )}
+
+                {component.type === 'alert' && (
+                  <>
+                    <div className="flex flex-col gap-1.5">
+                      <span className="text-builder-text-muted">Alert Title</span>
+                      <input
+                        type="text"
+                        value={component.props.title || ""}
+                        onChange={e => updateComponentProps(component.id, { title: e.target.value })}
+                        className="w-full bg-builder-surface-2 border border-builder-border-2 rounded-sm px-2 h-7 text-builder-text focus:outline-none"
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1.5 mt-2">
+                      <span className="text-builder-text-muted">Description</span>
+                      <textarea
+                        value={component.props.description || ""}
+                        onChange={e => updateComponentProps(component.id, { description: e.target.value })}
+                        rows={2}
+                        className="w-full bg-builder-surface-2 border border-builder-border-2 rounded-sm p-2 text-builder-text focus:outline-none text-xs"
+                      />
+                    </div>
+                    <div className="flex items-center justify-between mt-2">
+                      <span className="text-builder-text-muted">Variant</span>
+                      <select
+                        value={component.props.variant || "default"}
+                        onChange={e => updateComponentProps(component.id, { variant: e.target.value })}
+                        className="w-28 bg-builder-surface-2 border border-builder-border-2 rounded-sm px-2 h-6 text-builder-text focus:outline-none"
+                      >
+                        <option value="default">Default</option>
+                        <option value="destructive">Destructive</option>
+                      </select>
+                    </div>
+                  </>
+                )}
+
+                {component.type === 'table' && (
+                  <>
+                    <div className="flex flex-col gap-1.5">
+                      <span className="text-builder-text-muted">Headers (Comma separated)</span>
+                      <input
+                        type="text"
+                        value={(component.props.headers || []).join(', ')}
+                        onChange={e => updateComponentProps(component.id, { headers: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })}
+                        className="w-full bg-builder-surface-2 border border-builder-border-2 rounded-sm px-2 h-7 text-builder-text focus:outline-none"
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1.5 mt-2">
+                      <span className="text-builder-text-muted">Rows (JSON representation)</span>
+                      <textarea
+                        value={JSON.stringify(component.props.rows || [], null, 2)}
+                        onChange={e => {
+                          try {
+                            const parsed = JSON.parse(e.target.value);
+                            if (Array.isArray(parsed) && parsed.every(Array.isArray)) {
+                              updateComponentProps(component.id, { rows: parsed });
+                            }
+                          } catch (err) {
+                            // Ignore invalid JSON while typing
+                          }
+                        }}
+                        rows={5}
+                        className="w-full bg-builder-surface-2 border border-builder-border-2 rounded-sm p-2 text-builder-text font-mono text-[10px] focus:outline-none"
+                      />
+                      <span className="text-[10px] text-builder-text-muted">Format: [ ["col1", "col2"], ["col1", "col2"] ]</span>
+                    </div>
+                  </>
+                )}
+
+                {component.type === 'accordion' && (
+                  <div className="flex flex-col gap-1.5">
+                    <span className="text-builder-text-muted">Accordion Items (JSON)</span>
+                    <textarea
+                      value={JSON.stringify(component.props.items || [], null, 2)}
+                      onChange={e => {
+                        try {
+                          const parsed = JSON.parse(e.target.value);
+                          if (Array.isArray(parsed)) {
+                            updateComponentProps(component.id, { items: parsed });
+                          }
+                        } catch (err) {
+                          // Ignore invalid JSON while typing
+                        }
+                      }}
+                      rows={6}
+                      className="w-full bg-builder-surface-2 border border-builder-border-2 rounded-sm p-2 text-builder-text font-mono text-[10px] focus:outline-none"
+                    />
+                    <span className="text-[10px] text-builder-text-muted font-sans">Format: [ &#123; "title": "...", "content": "..." &#125; ]</span>
+                  </div>
+                )}
+
+                {component.type === 'tabs' && (
+                  <>
+                    <div className="flex flex-col gap-1.5">
+                      <span className="text-builder-text-muted">Tabs List (JSON)</span>
+                      <textarea
+                        value={JSON.stringify(component.props.tabs || [], null, 2)}
+                        onChange={e => {
+                          try {
+                            const parsed = JSON.parse(e.target.value);
+                            if (Array.isArray(parsed)) {
+                              updateComponentProps(component.id, { tabs: parsed });
+                            }
+                          } catch (err) {
+                            // Ignore invalid JSON while typing
+                          }
+                        }}
+                        rows={6}
+                        className="w-full bg-builder-surface-2 border border-builder-border-2 rounded-sm p-2 text-builder-text font-mono text-[10px] focus:outline-none"
+                      />
+                      <span className="text-[10px] text-builder-text-muted font-sans">Format: [ &#123; "id": "tab1", "label": "...", "content": "..." &#125; ]</span>
+                    </div>
+                    <div className="flex flex-col gap-1.5 mt-2">
+                      <span className="text-builder-text-muted">Active Tab ID</span>
+                      <input
+                        type="text"
+                        value={component.props.activeTab || ""}
+                        onChange={e => updateComponentProps(component.id, { activeTab: e.target.value })}
+                        className="w-full bg-builder-surface-2 border border-builder-border-2 rounded-sm px-2 h-7 text-builder-text focus:outline-none"
+                      />
+                    </div>
+                  </>
+                )}
+
+                {(component.type === 'dialog' || component.type === 'sheet') && (
+                  <>
+                    <div className="flex flex-col gap-1.5">
+                      <span className="text-builder-text-muted">Trigger Button Text</span>
+                      <input
+                        type="text"
+                        value={component.props.triggerText || ""}
+                        onChange={e => updateComponentProps(component.id, { triggerText: e.target.value })}
+                        className="w-full bg-builder-surface-2 border border-builder-border-2 rounded-sm px-2 h-7 text-builder-text focus:outline-none"
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1.5 mt-2">
+                      <span className="text-builder-text-muted">Overlay Title</span>
+                      <input
+                        type="text"
+                        value={component.props.title || ""}
+                        onChange={e => updateComponentProps(component.id, { title: e.target.value })}
+                        className="w-full bg-builder-surface-2 border border-builder-border-2 rounded-sm px-2 h-7 text-builder-text focus:outline-none"
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1.5 mt-2">
+                      <span className="text-builder-text-muted">Overlay Description</span>
+                      <textarea
+                        value={component.props.description || ""}
+                        onChange={e => updateComponentProps(component.id, { description: e.target.value })}
+                        rows={3}
+                        className="w-full bg-builder-surface-2 border border-builder-border-2 rounded-sm p-2 text-builder-text focus:outline-none text-xs"
+                      />
+                    </div>
+                  </>
+                )}
+
+                {component.type === 'popover' && (
+                  <>
+                    <div className="flex flex-col gap-1.5">
+                      <span className="text-builder-text-muted">Trigger Button Text</span>
+                      <input
+                        type="text"
+                        value={component.props.triggerText || ""}
+                        onChange={e => updateComponentProps(component.id, { triggerText: e.target.value })}
+                        className="w-full bg-builder-surface-2 border border-builder-border-2 rounded-sm px-2 h-7 text-builder-text focus:outline-none"
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1.5 mt-2">
+                      <span className="text-builder-text-muted">Popover Title</span>
+                      <input
+                        type="text"
+                        value={component.props.title || ""}
+                        onChange={e => updateComponentProps(component.id, { title: e.target.value })}
+                        className="w-full bg-builder-surface-2 border border-builder-border-2 rounded-sm px-2 h-7 text-builder-text focus:outline-none"
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1.5 mt-2">
+                      <span className="text-builder-text-muted">Popover Content</span>
+                      <textarea
+                        value={component.props.content || ""}
+                        onChange={e => updateComponentProps(component.id, { content: e.target.value })}
+                        rows={3}
+                        className="w-full bg-builder-surface-2 border border-builder-border-2 rounded-sm p-2 text-builder-text focus:outline-none text-xs"
+                      />
+                    </div>
+                  </>
+                )}
+
+                {component.type === 'tooltip' && (
+                  <>
+                    <div className="flex flex-col gap-1.5">
+                      <span className="text-builder-text-muted">Trigger Button Text</span>
+                      <input
+                        type="text"
+                        value={component.props.triggerText || ""}
+                        onChange={e => updateComponentProps(component.id, { triggerText: e.target.value })}
+                        className="w-full bg-builder-surface-2 border border-builder-border-2 rounded-sm px-2 h-7 text-builder-text focus:outline-none"
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1.5 mt-2">
+                      <span className="text-builder-text-muted">Tooltip Text</span>
+                      <input
+                        type="text"
+                        value={component.props.content || ""}
+                        onChange={e => updateComponentProps(component.id, { content: e.target.value })}
+                        className="w-full bg-builder-surface-2 border border-builder-border-2 rounded-sm px-2 h-7 text-builder-text focus:outline-none"
+                      />
+                    </div>
+                  </>
+                )}
+
+                {['section', 'container', 'grid', 'flex-row', 'calendar'].includes(component.type) && (
                   <div className="text-builder-text-muted text-[11px] py-4 text-center">
                     No custom properties needed. Use the Style tab to configure layout, spacing, and dimensions.
                   </div>

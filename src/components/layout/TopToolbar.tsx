@@ -7,7 +7,10 @@ export function TopToolbar() {
     <div className="flex items-center justify-between h-10 px-4 border-b border-builder-border" style={{ backgroundColor: "var(--color-builder-bg)" }}>
       {/* Left */}
       <div className="flex items-center gap-2">
-        <button className="flex items-center gap-1 bg-builder-accent text-white px-3 py-1 rounded-sm text-xs font-medium hover:bg-builder-accent/90 transition-colors">
+        <button 
+          onClick={() => useBuilderStore.getState().addComponent('section')}
+          className="flex items-center gap-1 bg-builder-accent text-white px-3 py-1 rounded-sm text-xs font-medium hover:bg-builder-accent/90 transition-colors"
+        >
           <Plus size={14} />
           <span>Add Section</span>
         </button>
@@ -46,36 +49,53 @@ export function TopToolbar() {
       {/* Center */}
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-1 bg-builder-surface p-1 rounded-sm border border-builder-border-2">
-          <button className="p-1 rounded-sm bg-builder-surface-3 text-builder-text" title="Desktop (1440px)">
+          <button 
+            onClick={() => useBuilderStore.getState().setCanvasWidth('1440px')}
+            className={`p-1 rounded-sm ${useBuilderStore(state => state.canvasWidth) === '1440px' ? 'bg-builder-surface-3 text-builder-accent' : 'text-builder-text-muted hover:bg-builder-surface-2 hover:text-builder-text'}`} title="Desktop (1440px)">
             <Monitor size={14} />
           </button>
-          <button className="p-1 rounded-sm text-builder-text-muted hover:bg-builder-surface-2 hover:text-builder-text" title="Tablet (768px)">
+          <button 
+            onClick={() => useBuilderStore.getState().setCanvasWidth('768px')}
+            className={`p-1 rounded-sm ${useBuilderStore(state => state.canvasWidth) === '768px' ? 'bg-builder-surface-3 text-builder-accent' : 'text-builder-text-muted hover:bg-builder-surface-2 hover:text-builder-text'}`} title="Tablet (768px)">
             <Tablet size={14} />
           </button>
-          <button className="p-1 rounded-sm text-builder-text-muted hover:bg-builder-surface-2 hover:text-builder-text" title="Mobile (375px)">
+          <button 
+            onClick={() => useBuilderStore.getState().setCanvasWidth('375px')}
+            className={`p-1 rounded-sm ${useBuilderStore(state => state.canvasWidth) === '375px' ? 'bg-builder-surface-3 text-builder-accent' : 'text-builder-text-muted hover:bg-builder-surface-2 hover:text-builder-text'}`} title="Mobile (375px)">
             <Smartphone size={14} />
           </button>
           <div className="w-[1px] h-3 bg-builder-border mx-1" />
           <input 
             type="text" 
-            defaultValue="1440" 
-            className="w-10 bg-transparent text-xs text-center text-builder-text focus:outline-none"
+            value={useBuilderStore(state => state.canvasWidth).replace('px', '')} 
+            onChange={(e) => useBuilderStore.getState().setCanvasWidth(`${e.target.value}px`)}
+            className="w-12 bg-transparent text-xs text-center text-builder-text focus:outline-none"
           />
         </div>
 
         <div className="flex items-center gap-1">
-          <button className="text-builder-text-muted hover:text-builder-text px-1">-</button>
-          <span className="text-xs text-builder-text w-10 text-center font-mono">100%</span>
-          <button className="text-builder-text-muted hover:text-builder-text px-1">+</button>
+          <button 
+            onClick={() => useBuilderStore.getState().setZoomLevel(Math.max(10, useBuilderStore.getState().zoomLevel - 10))}
+            className="text-builder-text-muted hover:text-builder-text px-1">-</button>
+          <span className="text-xs text-builder-text w-10 text-center font-mono">{useBuilderStore(state => state.zoomLevel)}%</span>
+          <button 
+            onClick={() => useBuilderStore.getState().setZoomLevel(Math.min(400, useBuilderStore.getState().zoomLevel + 10))}
+            className="text-builder-text-muted hover:text-builder-text px-1">+</button>
         </div>
       </div>
 
       {/* Right */}
       <div className="flex items-center gap-2">
-        <button className="p-1.5 text-builder-text-muted hover:text-builder-text rounded-sm hover:bg-builder-surface-2" title="Undo (Ctrl+Z)">
+        <button 
+          onClick={() => useBuilderStore.getState().undo()}
+          disabled={useBuilderStore(state => state.past.length === 0)}
+          className={`p-1.5 rounded-sm transition-colors ${useBuilderStore(state => state.past.length > 0) ? 'text-builder-text-muted hover:text-builder-text hover:bg-builder-surface-2' : 'text-builder-border cursor-not-allowed'}`} title="Undo (Ctrl+Z)">
           <Undo2 size={16} />
         </button>
-        <button className="p-1.5 text-builder-text-muted hover:text-builder-text rounded-sm hover:bg-builder-surface-2" title="Redo (Ctrl+Y)">
+        <button 
+          onClick={() => useBuilderStore.getState().redo()}
+          disabled={useBuilderStore(state => state.future.length === 0)}
+          className={`p-1.5 rounded-sm transition-colors ${useBuilderStore(state => state.future.length > 0) ? 'text-builder-text-muted hover:text-builder-text hover:bg-builder-surface-2' : 'text-builder-border cursor-not-allowed'}`} title="Redo (Ctrl+Y)">
           <Redo2 size={16} />
         </button>
         
@@ -95,9 +115,25 @@ export function TopToolbar() {
           <Download size={14} />
           <span>Export Code</span>
         </button>
-        <button className="flex items-center gap-1.5 px-3 py-1.5 bg-builder-surface-2 hover:bg-builder-surface-3 border border-builder-border-2 text-builder-text rounded-sm text-xs font-medium transition-colors" title="Save (Ctrl+S)">
+        <button 
+          onClick={() => {
+            const state = useBuilderStore.getState();
+            const projectData = {
+              components: state.components,
+              rootComponents: state.rootComponents,
+              pageSettings: state.pageSettings
+            };
+            const blob = new Blob([JSON.stringify(projectData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'noon-project.json';
+            a.click();
+            URL.revokeObjectURL(url);
+          }}
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-builder-surface-2 hover:bg-builder-surface-3 border border-builder-border-2 text-builder-text rounded-sm text-xs font-medium transition-colors" title="Save (Ctrl+S)">
           <Save size={14} />
-          <span>Save</span>
+          <span>Save JSON</span>
         </button>
       </div>
     </div>

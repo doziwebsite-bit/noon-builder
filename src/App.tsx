@@ -1,6 +1,6 @@
 import { Group, Panel, Separator } from "react-resizable-panels";
 import { DndContext } from "@dnd-kit/core";
-import type { DragEndEvent, DragStartEvent } from "@dnd-kit/core";
+import type { DragEndEvent } from "@dnd-kit/core";
 import { Titlebar } from "./components/layout/Titlebar";
 import { TopToolbar } from "./components/layout/TopToolbar";
 import { LeftPanel } from "./components/layout/LeftPanel";
@@ -22,18 +22,22 @@ function App() {
 
   const isPreviewMode = useBuilderStore(state => state.isPreviewMode);
   const setPreviewMode = useBuilderStore(state => state.setPreviewMode);
+  const undo = useBuilderStore(state => state.undo);
+  const redo = useBuilderStore(state => state.redo);
 
-  const handleDragStart = (event: DragStartEvent) => {
-    // Optional: visual feedback
-  };
+
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     
-    if (over && over.id === 'canvas-root') {
+    if (over) {
       const type = active.data.current?.componentType as ComponentType;
       if (type) {
-        addComponent(type);
+        if (over.id === 'canvas-root') {
+          addComponent(type);
+        } else {
+          addComponent(type, over.id as string);
+        }
       }
     }
   };
@@ -64,6 +68,14 @@ function App() {
       pasteComponent();
     }
   }, { preventDefault: true }, [pasteComponent, isPreviewMode]);
+
+  useHotkeys('mod+z', () => {
+    if (!isPreviewMode) undo();
+  }, { preventDefault: true }, [undo, isPreviewMode]);
+
+  useHotkeys('mod+y, mod+shift+z', () => {
+    if (!isPreviewMode) redo();
+  }, { preventDefault: true }, [redo, isPreviewMode]);
 
   useHotkeys('escape', () => {
     if (isPreviewMode) {
@@ -96,12 +108,10 @@ function App() {
         </div>
       )}
 
-      <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+      <DndContext onDragEnd={handleDragEnd}>
         <div className="flex-1 flex overflow-hidden">
           {isPreviewMode ? (
-            <div className="w-full h-full">
-              <CanvasCenter />
-            </div>
+            <CanvasCenter />
           ) : (
             <Group orientation="horizontal" className="w-full h-full">
               {/* Left Panel */}
